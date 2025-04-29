@@ -2,25 +2,32 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Hệ Thống Đã Bị Xâm Nhập</title>
+  <title>💀 HỆ THỐNG BỊ HACK 💀</title>
   <style>
     body {
+      margin: 0;
+      padding: 0;
       background-color: black;
-      color: lime;
-      font-family: monospace;
-      text-align: center;
-      padding-top: 100px;
-      animation: flashBg 0.5s infinite alternate;
+      color: red;
+      font-family: 'Courier New', monospace;
+      font-size: 20px;
+      overflow: hidden;
+      animation: crazyBg 0.2s infinite alternate;
     }
 
-    @keyframes flashBg {
-      from { background-color: black; }
-      to { background-color: red; }
+    @keyframes crazyBg {
+      0% { background-color: black; color: red; }
+      50% { background-color: red; color: black; }
+      100% { background-color: darkred; color: white; }
     }
 
-    .warning {
-      font-size: 32px;
-      animation: blink 0.3s infinite;
+    #terminal {
+      white-space: pre-wrap;
+      padding: 20px;
+    }
+
+    .blink {
+      animation: blink 0.4s infinite;
     }
 
     @keyframes blink {
@@ -31,23 +38,53 @@
   </style>
 </head>
 <body>
-  <div class="warning">⚠️ HỆ THỐNG ĐÃ BỊ XÂM NHẬP ⚠️</div>
+  <div id="terminal"></div>
+  <audio id="alarm" loop autoplay>
+    <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" type="audio/mpeg">
+  </audio>
 
   <script>
-    function popupSpam() {
-      setInterval(() => {
-        alert("Máy tính của bạn đang bị hack!");
-      }, 5000); // mỗi 5 giây
+    const terminal = document.getElementById("terminal");
+    const messages = [
+      "Đang truy cập hệ thống...",
+      "Xác thực root...",
+      "Đã xâm nhập hệ thống...",
+      "XÓA DỮ LIỆU TRONG 3...",
+      "2...",
+      "1...",
+      "💀 HỆ THỐNG ĐÃ BỊ HỦY DIỆT 💀"
+    ];
+
+    let i = 0;
+
+    function typeLine(line, callback) {
+      let j = 0;
+      const interval = setInterval(() => {
+        terminal.innerHTML += line[j];
+        j++;
+        if (j >= line.length) {
+          clearInterval(interval);
+          terminal.innerHTML += "\n";
+          if (callback) callback();
+        }
+      }, 50);
     }
 
-    function consoleFlood() {
-      setInterval(() => {
-        console.log("HACKED BY 404 - SYSTEM BREACH DETECTED!!!");
-      }, 100);
+    function typeAll() {
+      if (i < messages.length) {
+        typeLine(messages[i], () => {
+          i++;
+          setTimeout(typeAll, 500);
+        });
+      } else {
+        // Start popups
+        setInterval(() => {
+          alert("⚠️ HACK ĐANG TIẾN HÀNH ⚠️");
+        }, 4000);
+      }
     }
 
-    popupSpam();
-    consoleFlood();
+    typeAll();
   </script>
 </body>
 </html>
