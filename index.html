@@ -2,89 +2,93 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>💀 HỆ THỐNG BỊ HACK 💀</title>
+  <title>HỆ THỐNG BỊ TẤN CÔNG</title>
   <style>
     body {
       margin: 0;
       padding: 0;
-      background-color: black;
-      color: red;
       font-family: 'Courier New', monospace;
-      font-size: 20px;
+      background: url('https://media.giphy.com/media/JltOMwYmi0VrO/giphy.gif') center center / cover no-repeat fixed;
+      color: #00ff00;
+      font-size: 16px;
       overflow: hidden;
-      animation: crazyBg 0.2s infinite alternate;
+      animation: shake 0.1s infinite;
     }
 
-    @keyframes crazyBg {
-      0% { background-color: black; color: red; }
-      50% { background-color: red; color: black; }
-      100% { background-color: darkred; color: white; }
+    @keyframes shake {
+      0% { transform: translate(0px, 0px); }
+      25% { transform: translate(3px, -3px); }
+      50% { transform: translate(-3px, 3px); }
+      75% { transform: translate(3px, 3px); }
+      100% { transform: translate(-3px, -3px); }
     }
 
     #terminal {
-      white-space: pre-wrap;
       padding: 20px;
-    }
-
-    .blink {
-      animation: blink 0.4s infinite;
-    }
-
-    @keyframes blink {
-      0% { opacity: 1; }
-      50% { opacity: 0; }
-      100% { opacity: 1; }
+      white-space: pre-wrap;
+      background-color: rgba(0, 0, 0, 0.8);
+      height: 100vh;
+      overflow-y: auto;
     }
   </style>
 </head>
 <body>
-  <div id="terminal"></div>
-  <audio id="alarm" loop autoplay>
-    <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" type="audio/mpeg">
+  <audio id="scarySound" autoplay loop>
+    <source src="https://www.soundjay.com/misc/sounds/siren-noise-01.mp3" type="audio/mpeg">
   </audio>
+
+  <div id="terminal"></div>
 
   <script>
     const terminal = document.getElementById("terminal");
-    const messages = [
-      "Đang truy cập hệ thống...",
-      "Xác thực root...",
-      "Đã xâm nhập hệ thống...",
-      "XÓA DỮ LIỆU TRONG 3...",
-      "2...",
-      "1...",
-      "💀 HỆ THỐNG ĐÃ BỊ HỦY DIỆT 💀"
+    const lines = [
+      "[HACKER] Đang truy cập hệ thống...",
+      "[HACKER] Cấp quyền truy cập root...",
+      "[ROOT ACCESS GRANTED]",
+      "[HACKER] Đang lấy dữ liệu cá nhân...",
+      "[DATA EXFILTRATION IN PROGRESS]",
+      "[WARNING] Dữ liệu đang bị xóa...",
+      "!!! HỆ THỐNG ĐÃ BỊ KIỂM SOÁT !!!"
     ];
 
-    let i = 0;
+    function getRandomCodeLine() {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
+      let str = "";
+      for (let i = 0; i < 60; i++) {
+        str += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return str;
+    }
 
-    function typeLine(line, callback) {
-      let j = 0;
-      const interval = setInterval(() => {
-        terminal.innerHTML += line[j];
-        j++;
-        if (j >= line.length) {
-          clearInterval(interval);
-          terminal.innerHTML += "\n";
-          if (callback) callback();
-        }
+    function spamTerminal() {
+      setInterval(() => {
+        terminal.innerHTML += getRandomCodeLine() + "\n";
+        terminal.scrollTop = terminal.scrollHeight;
       }, 50);
     }
 
-    function typeAll() {
-      if (i < messages.length) {
-        typeLine(messages[i], () => {
+    function typeLines() {
+      let i = 0;
+      function next() {
+        if (i < lines.length) {
+          terminal.innerHTML += lines[i] + "\n";
           i++;
-          setTimeout(typeAll, 500);
-        });
-      } else {
-        // Start popups
-        setInterval(() => {
-          alert("⚠️ HACK ĐANG TIẾN HÀNH ⚠️");
-        }, 4000);
+          setTimeout(next, 500);
+        } else {
+          spamTerminal();
+          startPopupAttack();
+        }
       }
+      next();
     }
 
-    typeAll();
+    function startPopupAttack() {
+      setInterval(() => {
+        alert("⚠️ DỮ LIỆU BỊ RÒ RỈ ⚠️");
+      }, 3000);
+    }
+
+    typeLines();
   </script>
 </body>
 </html>
