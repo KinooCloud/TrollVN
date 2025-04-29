@@ -1,24 +1,29 @@
-# Cập nhật nội dung HTML thêm nhạc Skibidi Toilet + hiệu ứng hình hacker + ảo ảnh thêm gay cấn
-html_content_v3 = """<!DOCTYPE html>
+# Cập nhật phiên bản "Ultimate Troll" với:
+# - Dòng chữ dài, spam liên tục
+# - Không có nút bấm (tự động chạy)
+# - Thêm nhiều hình hacker
+# - Tự động phát nhạc troll từ nguồn hợp lệ
+
+html_ultimate = """<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>💀 HỆ THỐNG BỊ KIỂM SOÁT 💀</title>
+  <title>🔥 HACKED BY SKIBIDI TOILET 🔥</title>
   <style>
     body {
       margin: 0;
       padding: 0;
-      font-family: 'Courier New', monospace;
+      font-family: monospace;
       background: black;
-      color: #00ff00;
+      color: lime;
       font-size: 16px;
       overflow: hidden;
-      animation: glitchBg 0.15s infinite;
+      animation: flash 0.2s infinite;
     }
 
-    @keyframes glitchBg {
+    @keyframes flash {
       0% { background-color: black; }
-      50% { background-color: #330000; }
+      50% { background-color: #220000; }
       100% { background-color: black; }
     }
 
@@ -28,156 +33,86 @@ html_content_v3 = """<!DOCTYPE html>
       background-color: rgba(0, 0, 0, 0.85);
       height: 100vh;
       overflow-y: auto;
-      box-shadow: 0 0 20px red;
-      z-index: 5;
+      z-index: 2;
       position: relative;
     }
 
-    #startBtn, #exitBtn {
-      position: absolute;
-      top: 20px;
-      padding: 12px 24px;
-      background: red;
-      color: white;
-      border: none;
-      font-weight: bold;
-      font-size: 18px;
-      cursor: pointer;
-      z-index: 100;
-      animation: blink 1s infinite;
-    }
-
-    #startBtn { left: 20px; }
-    #exitBtn { right: 20px; background: black; color: red; }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
-    .warning-text {
+    .line {
+      animation: shake 0.1s infinite;
+      font-size: 20px;
       color: red;
-      font-size: 24px;
-      font-weight: bold;
-      animation: shakeText 0.2s infinite;
     }
 
-    @keyframes shakeText {
-      0% { transform: translate(0, 0); }
+    @keyframes shake {
+      0% { transform: translate(0px, 0px); }
       25% { transform: translate(2px, -2px); }
       50% { transform: translate(-2px, 2px); }
       75% { transform: translate(2px, 2px); }
       100% { transform: translate(-2px, -2px); }
     }
 
-    #hacker {
+    .hacker-img {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: url('https://i.imgur.com/8fK4h5p.gif') center center / cover no-repeat;
-      opacity: 0;
-      animation: hackerAppear 10s ease-in-out infinite;
-      z-index: 50;
-      pointer-events: none;
+      width: 200px;
+      height: auto;
+      opacity: 0.2;
+      animation: float 5s ease-in-out infinite;
+      z-index: 1;
     }
 
-    @keyframes hackerAppear {
-      0% { opacity: 0; }
-      45% { opacity: 0; }
-      50% { opacity: 0.5; }
-      55% { opacity: 0; }
-      100% { opacity: 0; }
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+      100% { transform: translateY(0); }
     }
   </style>
 </head>
 <body>
-  <button id="startBtn">💥 KÍCH HOẠT HACK</button>
-  <button id="exitBtn">THOÁT (KHÔNG CÓ TÁC DỤNG)</button>
-  <div id="hacker"></div>
-  <audio id="skibidiMusic" loop>
-    <source src="https://cdn.pixabay.com/audio/2023/08/26/audio_8a7d2ba6d3.mp3" type="audio/mpeg">
+  <audio id="bgmusic" autoplay loop>
+    <source src="https://files.catbox.moe/3wqfmn.mp3" type="audio/mpeg">
   </audio>
   <div id="terminal"></div>
-
+  <img src="https://i.imgur.com/8fK4h5p.gif" class="hacker-img" style="top:10%; left:5%;">
+  <img src="https://i.imgur.com/8fK4h5p.gif" class="hacker-img" style="top:50%; right:5%;">
+  <img src="https://i.imgur.com/8fK4h5p.gif" class="hacker-img" style="bottom:10%; left:40%;">
   <script>
     const terminal = document.getElementById("terminal");
-    const audio = document.getElementById("skibidiMusic");
-    const startBtn = document.getElementById("startBtn");
-    const exitBtn = document.getElementById("exitBtn");
 
-    const lines = [
-      "[CRITICAL] Đã phát hiện tín hiệu từ Skibidi Toilet...",
-      "[ERROR] Lỗi hệ thống - tệp bị nhiễm!",
-      "[SKIBIDI VIRUS ACTIVATED]",
-      "[LOADING...] 0% → 25% → 99%...",
-      "[WARNING] Hacker đang chiếm quyền điều khiển...",
-      "🧻💣💥 SKIBIDI TẤN CÔNG! 💥💣🧻"
-    ];
-
-    function getRandomCodeLine() {
-      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
-      let str = "";
-      for (let i = 0; i < 60; i++) {
-        str += chars.charAt(Math.floor(Math.random() * chars.length));
+    function getLongRandomString() {
+      const base = "SKIBIDI TOILET VIRUS DETECTED - HACKED - SYSTEM OVERRIDE - ";
+      let line = "";
+      while (line.length < 300) {
+        line += base[Math.floor(Math.random() * base.length)];
       }
-      return str;
+      return line;
     }
 
-    function spamTerminal() {
+    function spamLines() {
       setInterval(() => {
-        terminal.innerHTML += '<div class="warning-text">' + getRandomCodeLine() + "</div>";
+        const div = document.createElement("div");
+        div.className = "line";
+        div.textContent = getLongRandomString();
+        terminal.appendChild(div);
         terminal.scrollTop = terminal.scrollHeight;
-      }, 30);
+      }, 50);
     }
 
-    function typeLines() {
-      let i = 0;
-      function next() {
-        if (i < lines.length) {
-          terminal.innerHTML += "<div>" + lines[i] + "</div>";
-          i++;
-          setTimeout(next, 400);
-        } else {
-          spamTerminal();
-          popupAttack();
-        }
-      }
-      next();
-    }
-
-    function popupAttack() {
-      setInterval(() => {
-        alert("💣 Skibidi virus đã kiểm soát hệ thống 💣");
-      }, 2500);
-    }
-
-    startBtn.onclick = () => {
-      startBtn.remove();
-      exitBtn.innerText = "BỊ VÔ HIỆU HOÁ";
-      audio.play();
-      typeLines();
-    };
-
-    exitBtn.onclick = () => {
-      alert("🚫 KHÔNG THỂ THOÁT! HỆ THỐNG ĐÃ BỊ SKIBIDI KIỂM SOÁT 🚫");
+    window.onload = () => {
+      spamLines();
     };
   </script>
 </body>
 </html>
 """
 
-# Ghi file HTML mới
-html_path_v3 = "/mnt/data/hack-troll-v3.html"
-zip_path_v3 = "/mnt/data/hack-troll-v3.zip"
+# Ghi file và nén lại
+html_path_v4 = "/mnt/data/hack-skibidi-final.html"
+zip_path_v4 = "/mnt/data/hack-skibidi-final.zip"
 
-with open(html_path_v3, "w", encoding="utf-8") as f:
-    f.write(html_content_v3)
+with open(html_path_v4, "w", encoding="utf-8") as f:
+    f.write(html_ultimate)
 
-# Tạo file ZIP
-with ZipFile(zip_path_v3, 'w') as zipf:
-    zipf.write(html_path_v3, arcname="hack-troll-v3.html")
+with ZipFile(zip_path_v4, "w") as zipf:
+    zipf.write(html_path_v4, arcname="hack-skibidi-final.html")
 
-# Trả lại đường dẫn file zip
-zip_path_v3
+zip_path_v4
