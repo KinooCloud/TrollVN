@@ -1,46 +1,28 @@
-# Cập nhật phiên bản "Ultimate Troll" với:
-# - Dòng chữ dài, spam liên tục
-# - Không có nút bấm (tự động chạy)
-# - Thêm nhiều hình hacker
-# - Tự động phát nhạc troll từ nguồn hợp lệ
-
-html_ultimate = """<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>🔥 HACKED BY SKIBIDI TOILET 🔥</title>
+  <title>System Error</title>
   <style>
-    body {
+    html, body {
       margin: 0;
       padding: 0;
-      font-family: monospace;
       background: black;
-      color: lime;
-      font-size: 16px;
       overflow: hidden;
-      animation: flash 0.2s infinite;
     }
 
-    @keyframes flash {
-      0% { background-color: black; }
-      50% { background-color: #220000; }
-      100% { background-color: black; }
-    }
-
-    #terminal {
-      padding: 20px;
-      white-space: pre-wrap;
-      background-color: rgba(0, 0, 0, 0.85);
-      height: 100vh;
-      overflow-y: auto;
-      z-index: 2;
-      position: relative;
-    }
-
-    .line {
-      animation: shake 0.1s infinite;
-      font-size: 20px;
-      color: red;
+    .error-window {
+      position: absolute;
+      width: 300px;
+      height: 180px;
+      background: #1c1c1c;
+      border: 2px solid red;
+      color: white;
+      font-family: monospace;
+      padding: 10px;
+      box-shadow: 0 0 30px red;
+      z-index: 10;
+      animation: shake 0.2s infinite;
     }
 
     @keyframes shake {
@@ -51,68 +33,73 @@ html_ultimate = """<!DOCTYPE html>
       100% { transform: translate(-2px, -2px); }
     }
 
-    .hacker-img {
+    .hacker-bg {
       position: fixed;
-      width: 200px;
-      height: auto;
-      opacity: 0.2;
-      animation: float 5s ease-in-out infinite;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://i.imgur.com/MZ2QzQh.gif') center center / cover no-repeat;
+      opacity: 0.15;
       z-index: 1;
+      pointer-events: none;
     }
 
-    @keyframes float {
-      0% { transform: translateY(0); }
-      50% { transform: translateY(-20px); }
-      100% { transform: translateY(0); }
+    .hack-text {
+      position: fixed;
+      top: 40%;
+      width: 100%;
+      text-align: center;
+      font-size: 40px;
+      font-weight: bold;
+      color: red;
+      font-family: 'Courier New', monospace;
+      text-shadow: 0 0 10px red;
+      z-index: 1000;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.3; }
+      100% { opacity: 1; }
     }
   </style>
 </head>
 <body>
-  <audio id="bgmusic" autoplay loop>
+  <audio autoplay loop id="bgmusic" volume="1.0">
     <source src="https://files.catbox.moe/3wqfmn.mp3" type="audio/mpeg">
   </audio>
-  <div id="terminal"></div>
-  <img src="https://i.imgur.com/8fK4h5p.gif" class="hacker-img" style="top:10%; left:5%;">
-  <img src="https://i.imgur.com/8fK4h5p.gif" class="hacker-img" style="top:50%; right:5%;">
-  <img src="https://i.imgur.com/8fK4h5p.gif" class="hacker-img" style="bottom:10%; left:40%;">
-  <script>
-    const terminal = document.getElementById("terminal");
+  <div class="hacker-bg"></div>
+  <div class="hack-text">MÁY BẠN ĐÃ BỊ HACK BỞI SKIBIDI TOILET</div>
 
-    function getLongRandomString() {
-      const base = "SKIBIDI TOILET VIRUS DETECTED - HACKED - SYSTEM OVERRIDE - ";
-      let line = "";
-      while (line.length < 300) {
-        line += base[Math.floor(Math.random() * base.length)];
-      }
-      return line;
+  <script>
+    function createErrorWindow() {
+      const win = document.createElement('div');
+      win.className = 'error-window';
+      win.style.top = Math.random() * (window.innerHeight - 200) + 'px';
+      win.style.left = Math.random() * (window.innerWidth - 320) + 'px';
+      win.innerHTML = `
+        <b>System Error</b><br><br>
+        CODE: 0x000SKIBIDI<br>
+        Unusual activity detected<br>
+        Connection to host: LOST<br><br>
+        <button style='background:red; color:white; border:none; padding:4px;'>Force Close</button>
+      `;
+      document.body.appendChild(win);
     }
 
-    function spamLines() {
+    function loopErrorWindows() {
       setInterval(() => {
-        const div = document.createElement("div");
-        div.className = "line";
-        div.textContent = getLongRandomString();
-        terminal.appendChild(div);
-        terminal.scrollTop = terminal.scrollHeight;
-      }, 50);
+        createErrorWindow();
+      }, 500);
     }
 
     window.onload = () => {
-      spamLines();
+      loopErrorWindows();
+      setInterval(() => {
+        document.body.style.backgroundColor = Math.random() > 0.5 ? 'black' : '#330000';
+      }, 100);
     };
   </script>
 </body>
 </html>
-"""
-
-# Ghi file và nén lại
-html_path_v4 = "/mnt/data/hack-skibidi-final.html"
-zip_path_v4 = "/mnt/data/hack-skibidi-final.zip"
-
-with open(html_path_v4, "w", encoding="utf-8") as f:
-    f.write(html_ultimate)
-
-with ZipFile(zip_path_v4, "w") as zipf:
-    zipf.write(html_path_v4, arcname="hack-skibidi-final.html")
-
-zip_path_v4
