@@ -1,1 +1,53 @@
-Xin thông báo - Tài khoản của bạn đã bị xâm nhập không hợp pháp vui lòng mở chế độ dự phòng AntiVirus Malwarebytes 
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Hệ Thống Đã Bị Xâm Nhập</title>
+  <style>
+    body {
+      background-color: black;
+      color: lime;
+      font-family: monospace;
+      text-align: center;
+      padding-top: 100px;
+      animation: flashBg 0.5s infinite alternate;
+    }
+
+    @keyframes flashBg {
+      from { background-color: black; }
+      to { background-color: red; }
+    }
+
+    .warning {
+      font-size: 32px;
+      animation: blink 0.3s infinite;
+    }
+
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="warning">⚠️ HỆ THỐNG ĐÃ BỊ XÂM NHẬP ⚠️</div>
+
+  <script>
+    function popupSpam() {
+      setInterval(() => {
+        alert("Máy tính của bạn đang bị hack!");
+      }, 5000); // mỗi 5 giây
+    }
+
+    function consoleFlood() {
+      setInterval(() => {
+        console.log("HACKED BY 404 - SYSTEM BREACH DETECTED!!!");
+      }, 100);
+    }
+
+    popupSpam();
+    consoleFlood();
+  </script>
+</body>
+</html>
