@@ -2,136 +2,193 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Game: Đừng bị nhìn thấy!</title>
+  <title>Capybara Trốn Chạy</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body {
-      height: 100%;
-      background: #1a1a1a;
+    body {
+      margin: 0;
       overflow: hidden;
+      background: #c1f0c1;
       font-family: sans-serif;
-      color: white;
     }
 
-    .eyes {
-      position: absolute;
-      top: 40px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 60px;
-    }
-
-    .eye {
-      width: 80px;
-      height: 80px;
-      background: white;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    #game {
       position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(to bottom, #88e0b4, #d5f7d0);
+      overflow: hidden;
     }
 
-    .pupil {
-      width: 25px;
-      height: 25px;
-      background: black;
+    #capybara, #boss {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background-size: cover;
+    }
+
+    #capybara {
+      background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Capybara_%28Hydrochoerus_hydrochaeris%29.JPG/120px-Capybara_%28Hydrochoerus_hydrochaeris%29.JPG');
       border-radius: 50%;
-      position: absolute;
-      transition: 0.1s;
     }
 
-    #player {
-      width: 40px;
-      height: 40px;
-      background: red;
-      position: absolute;
-      top: 300px;
-      left: 300px;
+    #boss {
+      background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Angry_face_cartoon.svg/120px-Angry_face_cartoon.svg.png');
+      transform: scale(1.2);
     }
 
-    #status {
+    .obstacle {
       position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
+      width: 50px;
+      height: 50px;
+      background: green;
+      border-radius: 10px;
+    }
+
+    #score {
+      position: absolute;
+      top: 10px;
+      left: 10px;
       font-size: 24px;
+      background: rgba(255,255,255,0.7);
+      padding: 5px 10px;
+      border-radius: 10px;
+    }
+
+    #game-over {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 48px;
+      color: red;
+      display: none;
     }
   </style>
 </head>
 <body>
-  <div class="eyes">
-    <div class="eye"><div class="pupil"></div></div>
-    <div class="eye"><div class="pupil"></div></div>
+  <div id="game">
+    <div id="capybara"></div>
+    <div id="boss"></div>
+    <div id="score">⏱ Score: 0</div>
+    <div id="game-over">💀 Game Over!</div>
   </div>
-  <div id="player"></div>
-  <div id="status">Di chuyển bằng phím mũi tên. Đừng để mắt thấy!</div>
 
   <script>
-    const pupils = document.querySelectorAll('.pupil');
-    const eyes = document.querySelectorAll('.eye');
-    const player = document.getElementById('player');
-    const statusText = document.getElementById('status');
+    const game = document.getElementById("game");
+    const capybara = document.getElementById("capybara");
+    const boss = document.getElementById("boss");
+    const scoreText = document.getElementById("score");
+    const gameOverText = document.getElementById("game-over");
 
-    let posX = 300;
-    let posY = 300;
+    const gameWidth = window.innerWidth;
+    const gameHeight = window.innerHeight;
+
+    let capyX = 100;
+    let capyY = 100;
+    let bossX = 500;
+    let bossY = 400;
+    let score = 0;
+    let isGameOver = false;
+
     const speed = 5;
-    let gameOver = false;
+    let keys = {};
 
-    // Mắt dòm theo chuột
-    document.addEventListener('mousemove', (e) => {
-      pupils.forEach(pupil => {
-        const eye = pupil.parentElement;
-        const rect = eye.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const dx = e.clientX - centerX;
-        const dy = e.clientY - centerY;
-        const angle = Math.atan2(dy, dx);
-        const radius = 20;
-        const x = Math.cos(angle) * radius;
-        const y = Math.sin(angle) * radius;
-        pupil.style.transform = `translate(${x}px, ${y}px)`;
+    const obstacles = [];
+
+    // Create random obstacles
+    for (let i = 0; i < 10; i++) {
+      const obs = document.createElement("div");
+      obs.classList.add("obstacle");
+      obs.style.left = Math.random() * (gameWidth - 60) + "px";
+      obs.style.top = Math.random() * (gameHeight - 60) + "px";
+      game.appendChild(obs);
+      obstacles.push(obs);
+    }
+
+    // Movement input
+    document.addEventListener("keydown", (e) => keys[e.key] = true);
+    document.addEventListener("keyup", (e) => keys[e.key] = false);
+
+    function moveCapybara() {
+      if (isGameOver) return;
+
+      let nextX = capyX;
+      let nextY = capyY;
+
+      if (keys["ArrowUp"]) nextY -= speed;
+      if (keys["ArrowDown"]) nextY += speed;
+      if (keys["ArrowLeft"]) nextX -= speed;
+      if (keys["ArrowRight"]) nextX += speed;
+
+      // Giới hạn màn hình
+      nextX = Math.max(0, Math.min(gameWidth - 60, nextX));
+      nextY = Math.max(0, Math.min(gameHeight - 60, nextY));
+
+      // Va chạm vật cản
+      let collide = obstacles.some(obs => {
+        const rect = obs.getBoundingClientRect();
+        return (
+          nextX < rect.right &&
+          nextX + 60 > rect.left &&
+          nextY < rect.bottom &&
+          nextY + 60 > rect.top
+        );
       });
-    });
 
-    // Di chuyển ô đỏ bằng phím
-    document.addEventListener('keydown', (e) => {
-      if (gameOver) return;
-      if (e.key === "ArrowUp") posY -= speed;
-      if (e.key === "ArrowDown") posY += speed;
-      if (e.key === "ArrowLeft") posX -= speed;
-      if (e.key === "ArrowRight") posX += speed;
-      player.style.top = `${posY}px`;
-      player.style.left = `${posX}px`;
-      checkCollision();
-    });
+      if (!collide) {
+        capyX = nextX;
+        capyY = nextY;
+      }
 
-    function checkCollision() {
-      eyes.forEach(eye => {
-        const eyeRect = eye.getBoundingClientRect();
-        const eyeCenterX = eyeRect.left + eyeRect.width / 2;
-        const eyeCenterY = eyeRect.top + eyeRect.height / 2;
-        const playerRect = player.getBoundingClientRect();
-        const playerCenterX = playerRect.left + playerRect.width / 2;
-        const playerCenterY = playerRect.top + playerRect.height / 2;
+      capybara.style.left = capyX + "px";
+      capybara.style.top = capyY + "px";
+    }
 
-        const dx = playerCenterX - eyeCenterX;
-        const dy = playerCenterY - eyeCenterY;
-        const distance = Math.hypot(dx, dy);
+    function moveBoss() {
+      if (isGameOver) return;
 
-        if (distance < 100) {
-          endGame();
-        }
-      });
+      const dx = capyX - bossX;
+      const dy = capyY - bossY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const bossSpeed = 2 + score * 0.002;
+
+      if (dist > 1) {
+        bossX += (dx / dist) * bossSpeed;
+        bossY += (dy / dist) * bossSpeed;
+      }
+
+      boss.style.left = bossX + "px";
+      boss.style.top = bossY + "px";
+
+      // Kiểm tra va chạm
+      if (
+        Math.abs(bossX - capyX) < 50 &&
+        Math.abs(bossY - capyY) < 50
+      ) {
+        endGame();
+      }
     }
 
     function endGame() {
-      gameOver = true;
-      statusText.textContent = "💀 GAME OVER – Bạn đã bị nhìn thấy!";
-      player.style.background = "#444";
+      isGameOver = true;
+      gameOverText.style.display = "block";
     }
+
+    function updateScore() {
+      if (isGameOver) return;
+      score++;
+      scoreText.innerText = `⏱ Score: ${score}`;
+    }
+
+    function gameLoop() {
+      moveCapybara();
+      moveBoss();
+      updateScore();
+      if (!isGameOver) requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+    setInterval(updateScore, 1000);
   </script>
 </body>
 </html>
