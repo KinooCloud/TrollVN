@@ -2,193 +2,80 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Capybara Trốn Chạy</title>
+  <title>Tranh năng lượng</title>
   <style>
-    body {
+    html, body {
       margin: 0;
       overflow: hidden;
-      background: #c1f0c1;
-      font-family: sans-serif;
+      background: #000;
     }
 
-    #game {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      background: linear-gradient(to bottom, #88e0b4, #d5f7d0);
-      overflow: hidden;
-    }
-
-    #capybara, #boss {
-      position: absolute;
-      width: 60px;
-      height: 60px;
-      background-size: cover;
-    }
-
-    #capybara {
-      background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Capybara_%28Hydrochoerus_hydrochaeris%29.JPG/120px-Capybara_%28Hydrochoerus_hydrochaeris%29.JPG');
-      border-radius: 50%;
-    }
-
-    #boss {
-      background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Angry_face_cartoon.svg/120px-Angry_face_cartoon.svg.png');
-      transform: scale(1.2);
-    }
-
-    .obstacle {
-      position: absolute;
-      width: 50px;
-      height: 50px;
-      background: green;
-      border-radius: 10px;
-    }
-
-    #score {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      font-size: 24px;
-      background: rgba(255,255,255,0.7);
-      padding: 5px 10px;
-      border-radius: 10px;
-    }
-
-    #game-over {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 48px;
-      color: red;
-      display: none;
+    canvas {
+      display: block;
     }
   </style>
 </head>
 <body>
-  <div id="game">
-    <div id="capybara"></div>
-    <div id="boss"></div>
-    <div id="score">⏱ Score: 0</div>
-    <div id="game-over">💀 Game Over!</div>
-  </div>
+<canvas id="canvas"></canvas>
 
-  <script>
-    const game = document.getElementById("game");
-    const capybara = document.getElementById("capybara");
-    const boss = document.getElementById("boss");
-    const scoreText = document.getElementById("score");
-    const gameOverText = document.getElementById("game-over");
+<script>
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
 
-    const gameWidth = window.innerWidth;
-    const gameHeight = window.innerHeight;
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
-    let capyX = 100;
-    let capyY = 100;
-    let bossX = 500;
-    let bossY = 400;
-    let score = 0;
-    let isGameOver = false;
+  const particles = [];
 
-    const speed = 5;
-    let keys = {};
-
-    const obstacles = [];
-
-    // Create random obstacles
-    for (let i = 0; i < 10; i++) {
-      const obs = document.createElement("div");
-      obs.classList.add("obstacle");
-      obs.style.left = Math.random() * (gameWidth - 60) + "px";
-      obs.style.top = Math.random() * (gameHeight - 60) + "px";
-      game.appendChild(obs);
-      obstacles.push(obs);
+  class Particle {
+    constructor(x, y) {
+      this.x = x;
+      this.y = y;
+      this.size = Math.random() * 5 + 1;
+      this.speedX = Math.random() * 3 - 1.5;
+      this.speedY = Math.random() * 3 - 1.5;
+      this.hue = Math.random() * 360;
     }
 
-    // Movement input
-    document.addEventListener("keydown", (e) => keys[e.key] = true);
-    document.addEventListener("keyup", (e) => keys[e.key] = false);
-
-    function moveCapybara() {
-      if (isGameOver) return;
-
-      let nextX = capyX;
-      let nextY = capyY;
-
-      if (keys["ArrowUp"]) nextY -= speed;
-      if (keys["ArrowDown"]) nextY += speed;
-      if (keys["ArrowLeft"]) nextX -= speed;
-      if (keys["ArrowRight"]) nextX += speed;
-
-      // Giới hạn màn hình
-      nextX = Math.max(0, Math.min(gameWidth - 60, nextX));
-      nextY = Math.max(0, Math.min(gameHeight - 60, nextY));
-
-      // Va chạm vật cản
-      let collide = obstacles.some(obs => {
-        const rect = obs.getBoundingClientRect();
-        return (
-          nextX < rect.right &&
-          nextX + 60 > rect.left &&
-          nextY < rect.bottom &&
-          nextY + 60 > rect.top
-        );
-      });
-
-      if (!collide) {
-        capyX = nextX;
-        capyY = nextY;
-      }
-
-      capybara.style.left = capyX + "px";
-      capybara.style.top = capyY + "px";
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+      this.size *= 0.95;
     }
 
-    function moveBoss() {
-      if (isGameOver) return;
+    draw() {
+      ctx.fillStyle = `hsl(${this.hue}, 100%, 70%)`;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
 
-      const dx = capyX - bossX;
-      const dy = capyY - bossY;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      const bossSpeed = 2 + score * 0.002;
-
-      if (dist > 1) {
-        bossX += (dx / dist) * bossSpeed;
-        bossY += (dy / dist) * bossSpeed;
-      }
-
-      boss.style.left = bossX + "px";
-      boss.style.top = bossY + "px";
-
-      // Kiểm tra va chạm
-      if (
-        Math.abs(bossX - capyX) < 50 &&
-        Math.abs(bossY - capyY) < 50
-      ) {
-        endGame();
+  function handleParticles() {
+    for (let i = 0; i < particles.length; i++) {
+      particles[i].update();
+      particles[i].draw();
+      if (particles[i].size < 0.5) {
+        particles.splice(i, 1);
+        i--;
       }
     }
+  }
 
-    function endGame() {
-      isGameOver = true;
-      gameOverText.style.display = "block";
+  canvas.addEventListener("mousemove", function(e) {
+    for (let i = 0; i < 5; i++) {
+      particles.push(new Particle(e.x, e.y));
     }
+  });
 
-    function updateScore() {
-      if (isGameOver) return;
-      score++;
-      scoreText.innerText = `⏱ Score: ${score}`;
-    }
+  function animate() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    handleParticles();
+    requestAnimationFrame(animate);
+  }
 
-    function gameLoop() {
-      moveCapybara();
-      moveBoss();
-      updateScore();
-      if (!isGameOver) requestAnimationFrame(gameLoop);
-    }
-
-    gameLoop();
-    setInterval(updateScore, 1000);
-  </script>
+  animate();
+</script>
 </body>
 </html>
