@@ -2,73 +2,81 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>3D Hover Profile Card</title>
+  <title>Nút chạy trốn</title>
   <style>
     body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: linear-gradient(to right, #2c3e50, #3498db);
       margin: 0;
-      font-family: sans-serif;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(to right, #74ebd5, #ACB6E5);
+      font-family: 'Arial', sans-serif;
     }
 
-    .card {
-      width: 300px;
-      height: 400px;
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-      transition: transform 0.2s;
-      transform-style: preserve-3d;
-      perspective: 1000px;
-      overflow: hidden;
-      text-align: center;
+    #container {
+      position: relative;
+      width: 100%;
+      height: 100%;
     }
 
-    .card:hover {
+    button {
+      position: absolute;
+      padding: 15px 30px;
+      font-size: 18px;
+      background: #ff4757;
+      color: white;
+      border: none;
+      border-radius: 10px;
       cursor: pointer;
+      transition: transform 0.2s ease;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
 
-    .card img {
-      width: 100px;
-      margin-top: 40px;
-      border-radius: 50%;
-      border: 5px solid #3498db;
-    }
-
-    .card h2 {
-      margin: 20px 0 10px;
-    }
-
-    .card p {
-      padding: 0 20px;
-      color: #555;
+    button:hover {
+      background: #ff6b81;
     }
   </style>
 </head>
 <body>
-  <div class="card" id="card">
-    <img src="https://i.pravatar.cc/150?img=3" alt="Avatar">
-    <h2>Nguyễn Văn A</h2>
-    <p>Lập trình viên full-stack thích cà phê và khám phá công nghệ mới.</p>
+  <div id="container">
+    <button id="funnyButton">Bấm vào tôi 😜</button>
   </div>
 
   <script>
-    const card = document.getElementById('card');
+    const button = document.getElementById('funnyButton');
+    const container = document.getElementById('container');
 
-    card.addEventListener('mousemove', (e) => {
-      const x = e.offsetX;
-      const y = e.offsetY;
-      const rotateX = (y / card.clientHeight - 0.5) * 20;
-      const rotateY = (x / card.clientWidth - 0.5) * -20;
+    container.addEventListener('mousemove', (e) => {
+      const mouseX = e.clientX;
+      const mouseY = e.clientY;
+      const btnRect = button.getBoundingClientRect();
+      const btnX = btnRect.left + btnRect.width / 2;
+      const btnY = btnRect.top + btnRect.height / 2;
 
-      card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      const distance = Math.hypot(mouseX - btnX, mouseY - btnY);
+
+      if (distance < 100) {
+        const offsetX = (btnX - mouseX) * 1.5;
+        const offsetY = (btnY - mouseY) * 1.5;
+
+        let newLeft = btnRect.left + offsetX;
+        let newTop = btnRect.top + offsetY;
+
+        // Giới hạn trong màn hình
+        const maxLeft = window.innerWidth - btnRect.width;
+        const maxTop = window.innerHeight - btnRect.height;
+
+        newLeft = Math.max(0, Math.min(maxLeft, newLeft));
+        newTop = Math.max(0, Math.min(maxTop, newTop));
+
+        button.style.left = `${newLeft}px`;
+        button.style.top = `${newTop}px`;
+      }
     });
 
-    card.addEventListener('mouseleave', () => {
-      card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+    button.addEventListener('click', () => {
+      alert("WOW! Bạn bấm được luôn á 😲");
     });
   </script>
 </body>
