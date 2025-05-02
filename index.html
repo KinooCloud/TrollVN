@@ -1,81 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Tranh năng lượng</title>
+  <title>Câu đố hack não</title>
   <style>
-    html, body {
-      margin: 0;
-      overflow: hidden;
-      background: #000;
+    body {
+      background: linear-gradient(to bottom right, #3c3b3f, #605c3c);
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding-top: 50px;
     }
 
-    canvas {
-      display: block;
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 30px;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 40px;
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 12px;
+      background: #ffffff10;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      background: #ffffff30;
+      transform: scale(1.05);
+    }
+
+    #result {
+      font-size: 1.5em;
+      color: #ffd700;
+      margin-top: 20px;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
     }
   </style>
 </head>
 <body>
-<canvas id="canvas"></canvas>
 
-<script>
-  const canvas = document.getElementById("canvas");
-  const ctx = canvas.getContext("2d");
+  <h1>❓ Con gì đi bằng 2 chân?</h1>
 
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  <div class="options">
+    <button onclick="handleWrong()">A) Con người</button>
+    <button onclick="handleWrong()">B) Con chim</button>
+    <button onclick="handleWrong()">C) Con chó</button>
+    <button onclick="handleWrong()">D) Con chó (lại nữa?)</button>
+  </div>
 
-  const particles = [];
+  <div id="result">...</div>
 
-  class Particle {
-    constructor(x, y) {
-      this.x = x;
-      this.y = y;
-      this.size = Math.random() * 5 + 1;
-      this.speedX = Math.random() * 3 - 1.5;
-      this.speedY = Math.random() * 3 - 1.5;
-      this.hue = Math.random() * 360;
+  <script>
+    let answered = false;
+
+    function handleWrong() {
+      if (answered) return;
+      answered = true;
+
+      const res = document.getElementById("result");
+      res.innerHTML = "❌ Sai rồi bạn ơi!<br><br>✅ <b>Đáp án:</b> Con gì có 2 chân thì con đó có.";
+      res.style.opacity = 1;
     }
+  </script>
 
-    update() {
-      this.x += this.speedX;
-      this.y += this.speedY;
-      this.size *= 0.95;
-    }
-
-    draw() {
-      ctx.fillStyle = `hsl(${this.hue}, 100%, 70%)`;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-
-  function handleParticles() {
-    for (let i = 0; i < particles.length; i++) {
-      particles[i].update();
-      particles[i].draw();
-      if (particles[i].size < 0.5) {
-        particles.splice(i, 1);
-        i--;
-      }
-    }
-  }
-
-  canvas.addEventListener("mousemove", function(e) {
-    for (let i = 0; i < 5; i++) {
-      particles.push(new Particle(e.x, e.y));
-    }
-  });
-
-  function animate() {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    handleParticles();
-    requestAnimationFrame(animate);
-  }
-
-  animate();
-</script>
 </body>
 </html>
