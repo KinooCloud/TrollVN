@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>3D Hover Profile Card</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(to right, #2c3e50, #3498db);
+      margin: 0;
+      font-family: sans-serif;
+    }
+
+    .card {
+      width: 300px;
+      height: 400px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+      transform-style: preserve-3d;
+      perspective: 1000px;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .card:hover {
+      cursor: pointer;
+    }
+
+    .card img {
+      width: 100px;
+      margin-top: 40px;
+      border-radius: 50%;
+      border: 5px solid #3498db;
+    }
+
+    .card h2 {
+      margin: 20px 0 10px;
+    }
+
+    .card p {
+      padding: 0 20px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="card">
+    <img src="https://i.pravatar.cc/150?img=3" alt="Avatar">
+    <h2>Nguyễn Văn A</h2>
+    <p>Lập trình viên full-stack thích cà phê và khám phá công nghệ mới.</p>
+  </div>
+
+  <script>
+    const card = document.getElementById('card');
+
+    card.addEventListener('mousemove', (e) => {
+      const x = e.offsetX;
+      const y = e.offsetY;
+      const rotateX = (y / card.clientHeight - 0.5) * 20;
+      const rotateY = (x / card.clientWidth - 0.5) * -20;
+
+      card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    });
+
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+    });
+  </script>
+</body>
+</html>
