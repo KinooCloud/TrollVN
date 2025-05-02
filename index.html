@@ -2,91 +2,83 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Hiệu ứng Gõ Tên Lấp Lánh</title>
+  <title>Hiệu ứng gợn sóng khi di chuột</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
       overflow: hidden;
-      font-family: 'Segoe UI', sans-serif;
-      background: black;
-      color: white;
+      background: #000;
     }
 
-    body::before {
-      content: "";
-      position: absolute;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(#0f0c29, #302b63, #24243e);
-      animation: rotateBackground 30s linear infinite;
-      z-index: -2;
-    }
-
-    @keyframes rotateBackground {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .stars {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background: url('https://i.imgur.com/U1pHsGR.png');
-      background-size: cover;
-      animation: twinkle 20s linear infinite;
-      z-index: -1;
-    }
-
-    @keyframes twinkle {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
-    }
-
-    .center {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      text-align: center;
-    }
-
-    input {
-      padding: 12px 20px;
-      font-size: 18px;
-      border-radius: 10px;
-      border: none;
-      outline: none;
-      margin-bottom: 20px;
-      box-shadow: 0 0 10px #fff;
-    }
-
-    .output {
-      font-size: 48px;
-      font-weight: bold;
-      color: #0ff;
-      text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 40px #0ff;
-      transition: 0.3s;
+    canvas {
+      display: block;
     }
   </style>
 </head>
 <body>
-  <div class="stars"></div>
-  <div class="center">
-    <input type="text" id="nameInput" placeholder="Nhập tên của bạn...">
-    <div class="output" id="nameDisplay"></div>
-  </div>
+  <canvas id="canvas"></canvas>
 
   <script>
-    const input = document.getElementById('nameInput');
-    const display = document.getElementById('nameDisplay');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
 
-    input.addEventListener('input', () => {
-      display.textContent = input.value;
+    const ripples = [];
+
+    class Ripple {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.radius = 0;
+        this.alpha = 1;
+      }
+
+      update() {
+        this.radius += 2;
+        this.alpha -= 0.02;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(0, 255, 255, ${this.alpha})`;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+
+      isDead() {
+        return this.alpha <= 0;
+      }
+    }
+
+    function animate() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+      ctx.fillRect(0, 0, width, height);
+
+      for (let i = ripples.length - 1; i >= 0; i--) {
+        ripples[i].update();
+        ripples[i].draw();
+        if (ripples[i].isDead()) {
+          ripples.splice(i, 1);
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    canvas.addEventListener('mousemove', (e) => {
+      ripples.push(new Ripple(e.clientX, e.clientY));
     });
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    animate();
   </script>
 </body>
 </html>
