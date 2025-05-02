@@ -2,83 +2,62 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Hiệu ứng gợn sóng khi di chuột</title>
+  <title>Trích dẫn máy gõ</title>
   <style>
-    html, body {
+    body {
+      background: linear-gradient(to right, #1f4037, #99f2c8);
       margin: 0;
       padding: 0;
-      height: 100%;
-      overflow: hidden;
-      background: #000;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-family: 'Courier New', monospace;
+      font-size: 28px;
+      text-align: center;
     }
 
-    canvas {
-      display: block;
+    .quote {
+      max-width: 80%;
+      border-right: 3px solid white;
+      white-space: nowrap;
+      overflow: hidden;
     }
   </style>
 </head>
 <body>
-  <canvas id="canvas"></canvas>
+  <div class="quote" id="quoteBox"></div>
 
   <script>
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
+    const quotes = [
+      "Không có con đường nào dẫn đến hạnh phúc. Hạnh phúc chính là con đường.",
+      "Hãy sống như thể bạn sẽ chết vào ngày mai. Học như thể bạn sẽ sống mãi mãi.",
+      "Cuộc đời là 10% những gì xảy ra và 90% cách bạn phản ứng.",
+      "Đừng đợi cơ hội. Hãy tạo ra nó.",
+      "Giới hạn duy nhất của bạn là những gì bạn tin là có thật."
+    ];
 
-    const ripples = [];
+    let quoteBox = document.getElementById('quoteBox');
+    let quoteIndex = 0;
+    let charIndex = 0;
 
-    class Ripple {
-      constructor(x, y) {
-        this.x = x;
-        this.y = y;
-        this.radius = 0;
-        this.alpha = 1;
-      }
-
-      update() {
-        this.radius += 2;
-        this.alpha -= 0.02;
-      }
-
-      draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(0, 255, 255, ${this.alpha})`;
-        ctx.lineWidth = 2;
-        ctx.stroke();
-      }
-
-      isDead() {
-        return this.alpha <= 0;
+    function typeQuote() {
+      const currentQuote = quotes[quoteIndex];
+      if (charIndex <= currentQuote.length) {
+        quoteBox.innerHTML = currentQuote.substring(0, charIndex) + '<span class="cursor">|</span>';
+        charIndex++;
+        setTimeout(typeQuote, 60);
+      } else {
+        setTimeout(() => {
+          charIndex = 0;
+          quoteIndex = (quoteIndex + 1) % quotes.length;
+          typeQuote();
+        }, 3000); // chờ 3s rồi chuyển câu
       }
     }
 
-    function animate() {
-      ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
-      ctx.fillRect(0, 0, width, height);
-
-      for (let i = ripples.length - 1; i >= 0; i--) {
-        ripples[i].update();
-        ripples[i].draw();
-        if (ripples[i].isDead()) {
-          ripples.splice(i, 1);
-        }
-      }
-
-      requestAnimationFrame(animate);
-    }
-
-    canvas.addEventListener('mousemove', (e) => {
-      ripples.push(new Ripple(e.clientX, e.clientY));
-    });
-
-    window.addEventListener('resize', () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    });
-
-    animate();
+    typeQuote();
   </script>
 </body>
 </html>
